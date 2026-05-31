@@ -37,6 +37,11 @@ jobs:
           pkg-config cmake
         pip install --upgrade buildozer cython==0.29.37
 
+    - name: Clear buildozer cache (if corrupted)
+      run: |
+        rm -rf ~/.buildozer/android/platform/python-for-android || true
+        rm -rf ~/.buildozer/.gradle || true
+
     - name: Accept Android SDK licenses
       run: |
         mkdir -p ~/.android
