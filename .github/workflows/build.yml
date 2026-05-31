@@ -18,6 +18,11 @@ jobs:
         distribution: 'temurin'
         java-version: '17'
 
+    - name: Set JAVA_HOME for Java 17
+      run: |
+        echo "JAVA_HOME=$(echo $JAVA_HOME_17_X64)" >> $GITHUB_ENV
+        java -version
+
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
@@ -28,7 +33,6 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y \
           git zip unzip \
-          openjdk-17-jdk \
           autoconf libtool \
           libffi-dev libssl-dev \
           libsqlite3-dev \
