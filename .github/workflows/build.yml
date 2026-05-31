@@ -32,7 +32,7 @@ jobs:
           libffi-dev libssl-dev \
           libsqlite3-dev \
           pkg-config cmake
-        pip install --upgrade buildozer cython==0.29.37
+        pip install --upgrade buildozer cython==0.29.36
 
     - name: Accept Android SDK licenses
       run: |
