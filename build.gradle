@@ -1,0 +1,13 @@
+dependencies {
+    // 화면 전환 (스키밍 → 퀴즈 등 이동)
+    implementation "androidx.navigation:navigation-fragment-ktx:2.7.0"
+
+    // 좌우 슬라이드 카드 (ViewPager2)
+    implementation "androidx.viewpager2:viewpager2:1.1.0"
+
+    // 이미지 불러오기
+    implementation "com.github.bumptech.glide:glide:4.16.0"
+
+    // 학습 데이터 저장 (DB)
+    implementation "androidx.room:room-runtime:2.6.0"
+}
