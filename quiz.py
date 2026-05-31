@@ -11,6 +11,7 @@ from kivy.uix.widget import Widget
 from kivy.uix.scrollview import ScrollView
 from kivy.graphics import Color, Rectangle, RoundedRectangle
 from storage import save_daily_record
+from tts import speak
 
 # 일본어 키보드 데이터
 JP_KEYBOARD = {
@@ -158,6 +159,21 @@ class QuizScreen(Screen):
         )
         self.level_label.bind(
             size=lambda i, v: setattr(i, 'text_size', v))
+
+        # 🔊 발음 버튼
+        speak_btn = Button(
+            text="🔊",
+            font_size=18,
+            size_hint_x=None,
+            width=50,
+            size_hint_y=None,
+            height=50,
+            background_color=(0.2, 0.5, 0.9, 1),
+            color=(1, 1, 1, 1)
+        )
+        speak_btn.bind(on_press=lambda x: speak(
+            self.current_word["japanese"]
+        ))
 
         self.jp_label = Label(
             text="", font_name="NotoJP", font_size=44, bold=True,

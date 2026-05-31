@@ -6,7 +6,18 @@ from kivy.uix.label import Label
 from kivy.uix.button import Button
 from kivy.uix.widget import Widget
 from kivy.graphics import Color, Rectangle, RoundedRectangle
+from kivy.core.text import LabelBase
 from words import WORDS
+from tts import speak
+
+try:
+    LabelBase.register(name="Nanum", fn_regular="NanumGothic.ttf")
+except Exception:
+    pass
+try:
+    LabelBase.register(name="NotoJP", fn_regular="NotoSansJP-Regular.ttf")
+except Exception:
+    pass
 
 class SkimmingScreen(Screen):
 
@@ -102,6 +113,22 @@ class SkimmingScreen(Screen):
         )
         self.level_label.bind(
             size=lambda i, v: setattr(i, 'text_size', v))
+        # 🔊 일본어 발음 버튼
+        speak_btn = Button(
+            text="🔊 발음 듣기",
+            font_name="Nanum",
+            font_size=13,
+            size_hint_y=None,
+            height=36,
+            background_color=(0.2, 0.5, 0.9, 1),
+            color=(1, 1, 1, 1)
+        )
+        speak_btn.bind(on_press=lambda x: speak(
+            self.words[self.index]["japanese"] + "。" +
+            self.words[self.index].get("example_jp", "")
+        ))
+        self.card.add_widget(speak_btn)
+
         self.jp_label = Label(
             text="", font_name="NotoJP", font_size=46, bold=True,
             color=(0, 0, 0, 1),
