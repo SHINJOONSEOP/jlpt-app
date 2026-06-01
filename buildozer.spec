@@ -20,9 +20,6 @@ requirements = python3,kivy==2.5.0,requests
 # 앱 방향 (세로 고정)
 orientation = portrait
 
-# 아이콘 (없으면 기본 아이콘)
-# icon.filename = %(source.dir)s/icon.png
-
 # 화면 설정
 fullscreen = 0
 
@@ -31,7 +28,7 @@ android.minapi = 26
 android.api = 33
 android.ndk = 25b
 android.accept_sdk_license = True
-android.arch = arm64-v8a
+android.archs = arm64-v8a
 
 # 권한
 android.permissions = INTERNET,WRITE_EXTERNAL_STORAGE,READ_EXTERNAL_STORAGE,RECEIVE_BOOT_COMPLETED,VIBRATE
