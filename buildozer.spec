@@ -9,7 +9,7 @@ source.include_patterns = *.ttf,*.json,*.csv
 
 version = 1.0
 
-requirements = python3,kivy==2.5.0,requests
+requirements = python3,kivy==2.2.1,requests
 
 orientation = portrait
 fullscreen = 0
