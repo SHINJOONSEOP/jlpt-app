@@ -1,5 +1,5 @@
 # main.py
-from kivymd.app import MDApp
+from kivymd.app import App
 from kivy.uix.screenmanager import ScreenManager
 from login import LoginScreen
 from home import HomeScreen
@@ -9,7 +9,7 @@ from history import HistoryScreen
 from stats import StatsScreen
 import api
 
-class JLPTApp(MDApp):
+class JLPTApp(App):
     def build(self):
         sm = ScreenManager()
         sm.add_widget(LoginScreen(name="login"))
