@@ -15,7 +15,7 @@ source.include_patterns = *.ttf,*.json,*.csv
 version = 1.0
 
 # 필수 패키지
-requirements = python3,kivy==2.5.0,requests
+requirements = python3,kivy==2.3.0,requests
 
 # 앱 방향 (세로 고정)
 orientation = portrait
