@@ -7,19 +7,9 @@ from kivy.uix.label import Label
 from kivy.uix.button import Button
 from kivy.uix.widget import Widget
 from kivy.graphics import Color, RoundedRectangle, Rectangle
-from kivy.core.text import LabelBase
 from datetime import date, timedelta
 from storage import get_history
 import api
-
-try:
-    LabelBase.register(name="Nanum", fn_regular="NanumGothic.ttf")
-except Exception:
-    pass
-try:
-    LabelBase.register(name="NotoJP", fn_regular="NotoSansJP-Regular.ttf")
-except Exception:
-    pass
 
 class HomeScreen(Screen):
 
@@ -29,7 +19,6 @@ class HomeScreen(Screen):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self._build()
 
     def _build(self):
         with self.canvas.before:
@@ -42,21 +31,20 @@ class HomeScreen(Screen):
 
         layout = BoxLayout(
             orientation="vertical",
-            padding=[16, 16, 16, 16],
-            spacing=10
+            padding=[14, 14, 14, 14],
+            spacing=8
         )
 
         # ── 상단 헤더 ─────────────────────────
         header = BoxLayout(
             orientation="horizontal",
-            size_hint_y=None,
-            height=44
+            size_hint_y=None, height=44
         )
         nickname = api.get_nickname() or "학습자"
         title = Label(
             text=f"JLPT  👋 {nickname}",
             font_name="Nanum",
-            font_size=20, bold=True,
+            font_size=18, bold=True,
             color=(0, 0, 0, 1),
             size_hint_x=0.7, halign="left"
         )
@@ -78,15 +66,15 @@ class HomeScreen(Screen):
         header.add_widget(logout_btn)
 
         # ── 요일 라벨 ─────────────────────────
-        days_layout = GridLayout(cols=7, size_hint_y=None, height=24)
+        days_layout = GridLayout(cols=7, size_hint_y=None, height=22)
         for day in ["일", "월", "화", "수", "목", "금", "토"]:
             days_layout.add_widget(Label(
                 text=day, font_name="Nanum",
-                font_size=12, color=(0.6, 0.6, 0.6, 1)
+                font_size=11, color=(0.6, 0.6, 0.6, 1)
             ))
 
         # ── 날짜 줄 ───────────────────────────
-        dates_layout = GridLayout(cols=7, size_hint_y=None, height=44)
+        dates_layout = GridLayout(cols=7, size_hint_y=None, height=40)
         today = date.today()
         weekday = today.weekday()
         sunday = today - timedelta(days=(weekday + 1) % 7)
@@ -109,7 +97,7 @@ class HomeScreen(Screen):
 
             btn = Button(
                 text=day_text,
-                font_name="Nanum", font_size=12,
+                font_name="Nanum", font_size=11,
                 background_color=(0.1, 0.1, 0.1, 1) if is_today
                                   else (0.95, 0.95, 0.93, 1),
                 color=day_color, bold=is_today, halign="center"
@@ -120,20 +108,17 @@ class HomeScreen(Screen):
         day_count = len(get_history())
         day_label = Label(
             text=f"Day {day_count if day_count > 0 else 1}",
-            font_name="Nanum", font_size=20, bold=True,
+            font_name="Nanum", font_size=18, bold=True,
             color=(0, 0, 0, 1),
-            size_hint_y=None, height=36, halign="left"
+            size_hint_y=None, height=32, halign="left"
         )
         day_label.bind(size=lambda i, v: setattr(i, 'text_size', v))
 
-        # ── 가로 슬라이드 카드 영역 ───────────
-        scroll = ScrollView(
-            size_hint_y=None, height=320,
-            do_scroll_x=True, do_scroll_y=False, bar_width=0
-        )
-        cards_container = GridLayout(
-            cols=2, size_hint_x=None, width=600,
-            size_hint_y=1, spacing=12, padding=[0, 4, 0, 4]
+        # ── 카드 영역 (세로로 배치, 모바일에 맞게) ─
+        cards_box = BoxLayout(
+            orientation="vertical",
+            size_hint_y=1,
+            spacing=10
         )
 
         card_data = [
@@ -150,14 +135,12 @@ class HomeScreen(Screen):
         ]
 
         for data in card_data:
-            cards_container.add_widget(self._make_card(data))
-
-        scroll.add_widget(cards_container)
+            cards_box.add_widget(self._make_card(data))
 
         # ── 하단 버튼 행 ──────────────────────
         bottom_row = BoxLayout(
             orientation="horizontal",
-            size_hint_y=None, height=44, spacing=10
+            size_hint_y=None, height=50, spacing=10
         )
         history_btn = Button(
             text="📋 기록", font_name="Nanum", font_size=14,
@@ -180,22 +163,21 @@ class HomeScreen(Screen):
         layout.add_widget(days_layout)
         layout.add_widget(dates_layout)
         layout.add_widget(day_label)
-        layout.add_widget(scroll)
+        layout.add_widget(cards_box)
         layout.add_widget(bottom_row)
-        layout.add_widget(Widget())
 
         self.add_widget(layout)
 
     def _make_card(self, data):
         card = BoxLayout(
             orientation="vertical",
-            padding=20, spacing=10,
-            size_hint_x=None, width=280
+            padding=16, spacing=8,
+            size_hint_y=1
         )
         with card.canvas.before:
             Color(*data["color"])
             rect = RoundedRectangle(
-                pos=card.pos, size=card.size, radius=[18])
+                pos=card.pos, size=card.size, radius=[16])
         card.bind(
             pos=lambda i, v, r=rect: setattr(r, 'pos', v),
             size=lambda i, v, r=rect: setattr(r, 'size', v)
@@ -203,7 +185,7 @@ class HomeScreen(Screen):
 
         title = Label(
             text=data["title"], font_name="Nanum",
-            font_size=20, bold=True, color=data["text_color"],
+            font_size=22, bold=True, color=data["text_color"],
             size_hint_y=None, height=36, halign="left"
         )
         title.bind(size=lambda i, v: setattr(i, 'text_size', v))
@@ -212,7 +194,7 @@ class HomeScreen(Screen):
             text=data["desc"], font_name="Nanum", font_size=13,
             color=(0.7, 0.7, 0.7, 1) if data["color"][0] < 0.5
                   else (0.5, 0.5, 0.5, 1),
-            size_hint_y=None, height=28, halign="left"
+            size_hint_y=None, height=24, halign="left"
         )
         desc.bind(size=lambda i, v: setattr(i, 'text_size', v))
 
@@ -220,14 +202,14 @@ class HomeScreen(Screen):
             text=data["time"], font_name="Nanum", font_size=12,
             color=(0.6, 0.6, 0.6, 1) if data["color"][0] < 0.5
                   else (0.7, 0.7, 0.7, 1),
-            size_hint_y=None, height=24, halign="left"
+            size_hint_y=None, height=20, halign="left"
         )
         time_label.bind(size=lambda i, v: setattr(i, 'text_size', v))
 
         start_btn = Button(
             text="바로 시작", font_name="Nanum",
-            font_size=15, bold=True,
-            size_hint_y=None, height=48,
+            font_size=16, bold=True,
+            size_hint_y=None, height=50,
             background_color=(1, 1, 1, 1) if data["color"][0] < 0.5
                               else (0.1, 0.1, 0.1, 1),
             color=(0, 0, 0, 1) if data["color"][0] < 0.5

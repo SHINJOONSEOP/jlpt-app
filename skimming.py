@@ -5,19 +5,10 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.label import Label
 from kivy.uix.button import Button
 from kivy.uix.widget import Widget
+from kivy.uix.scrollview import ScrollView
 from kivy.graphics import Color, Rectangle, RoundedRectangle
-from kivy.core.text import LabelBase
 from words import WORDS
 from tts import speak
-
-try:
-    LabelBase.register(name="Nanum", fn_regular="NanumGothic.ttf")
-except Exception:
-    pass
-try:
-    LabelBase.register(name="NotoJP", fn_regular="NotoSansJP-Regular.ttf")
-except Exception:
-    pass
 
 class SkimmingScreen(Screen):
 
@@ -43,17 +34,17 @@ class SkimmingScreen(Screen):
         root = BoxLayout(orientation="vertical")
         bg   = BoxLayout(
             orientation="vertical",
-            padding=[16, 16, 16, 16], spacing=10
+            padding=[12, 12, 12, 12], spacing=8
         )
         self._make_bg(bg)
 
         # 상단 바
         top_bar = BoxLayout(
             orientation="horizontal",
-            size_hint_y=None, height=50
+            size_hint_y=None, height=44
         )
         back_btn = Button(
-            text="←", size_hint_x=None, width=50,
+            text="←", size_hint_x=None, width=44,
             font_size=20,
             background_color=(0.95, 0.95, 0.93, 1),
             color=(0, 0, 0, 1)
@@ -90,11 +81,11 @@ class SkimmingScreen(Screen):
         )
         progress_bg.add_widget(self.fill_bar)
 
-        # 단어 카드
+        # 단어 카드 — 고정 height 제거, size_hint_y=1로 화면 채우기
         self.card = BoxLayout(
             orientation="vertical",
-            size_hint_y=None, height=420,
-            padding=[24, 20, 24, 20], spacing=12
+            size_hint_y=1,
+            padding=[20, 16, 20, 16], spacing=10
         )
         with self.card.canvas.before:
             Color(1, 1, 1, 1)
@@ -113,13 +104,13 @@ class SkimmingScreen(Screen):
         self.level_label.bind(
             size=lambda i, v: setattr(i, 'text_size', v))
 
-        # 🔊 단어 클릭하면 발음 (Button처럼 동작하는 Label)
+        # 🔊 단어 클릭하면 발음
         self.jp_btn = Button(
             text="",
-            font_name="NotoJP", font_size=46, bold=True,
+            font_name="NotoJP", font_size=42, bold=True,
             color=(0, 0, 0, 1),
-            size_hint_y=None, height=70,
-            background_color=(1, 1, 1, 0),  # 투명 배경
+            size_hint_y=None, height=65,
+            background_color=(1, 1, 1, 0),
         )
         self.jp_btn.bind(on_press=lambda x: speak(
             self.words[self.index]["japanese"]
@@ -128,7 +119,7 @@ class SkimmingScreen(Screen):
         self.furigana_label = Label(
             text="", font_name="NotoJP", font_size=14,
             color=(0.5, 0.5, 0.5, 1),
-            size_hint_y=None, height=26, halign="center"
+            size_hint_y=None, height=24, halign="center"
         )
         self.furigana_label.bind(
             size=lambda i, v: setattr(i, 'text_size', v))
@@ -149,12 +140,12 @@ class SkimmingScreen(Screen):
             pos=lambda i, v: setattr(_dr, 'pos', v),
             size=lambda i, v: setattr(_dr, 'size', v))
 
-        # 🔊 예문 클릭하면 예문 발음
+        # 🔊 예문 클릭하면 발음
         self.example_jp_btn = Button(
             text="",
             font_name="NotoJP", font_size=14,
             color=(0.2, 0.2, 0.2, 1),
-            size_hint_y=None, height=46,
+            size_hint_y=None, height=50,
             background_color=(0.95, 0.97, 1, 1),
             halign="center"
         )
@@ -166,10 +157,11 @@ class SkimmingScreen(Screen):
             text="", font_name="Nanum", font_size=13,
             color=(0.5, 0.5, 0.5, 1),
             size_hint_y=None, height=36,
-            halign="center", text_size=(300, None)
+            halign="center"
         )
+        self.example_kr_label.bind(
+            size=lambda i, v: setattr(i, 'text_size', v))
 
-        # 힌트 라벨
         hint = Label(
             text="💡 단어/예문을 누르면 발음이 재생돼요",
             font_name="Nanum", font_size=11,
@@ -185,12 +177,13 @@ class SkimmingScreen(Screen):
         self.card.add_widget(divider)
         self.card.add_widget(self.example_jp_btn)
         self.card.add_widget(self.example_kr_label)
+        self.card.add_widget(Widget())  # 여백
         self.card.add_widget(hint)
 
         # 하단 버튼
         btn_layout = BoxLayout(
             orientation="horizontal",
-            size_hint_y=None, height=54, spacing=10
+            size_hint_y=None, height=60, spacing=10
         )
         dont_know_btn = Button(
             text="잘모르겠다", font_name="Nanum", font_size=16,
@@ -256,7 +249,7 @@ class SkimmingScreen(Screen):
         self.clear_widgets()
 
         root = BoxLayout(orientation="vertical")
-        bg   = BoxLayout(orientation="vertical", padding=40, spacing=16)
+        bg   = BoxLayout(orientation="vertical", padding=30, spacing=16)
         self._make_bg(bg)
 
         bg.add_widget(Widget())
@@ -278,7 +271,7 @@ class SkimmingScreen(Screen):
             text="퀴즈 바로 시작 →",
             font_name="Nanum", font_size=16, bold=True,
             background_color=(0.1, 0.1, 0.1, 1), color=(1, 1, 1, 1),
-            size_hint_y=None, height=54
+            size_hint_y=None, height=60
         )
         quiz_btn.bind(on_press=lambda x: setattr(
             self.manager, "current", "quiz"))
@@ -288,7 +281,7 @@ class SkimmingScreen(Screen):
             font_name="Nanum", font_size=16,
             background_color=(0.95, 0.95, 0.95, 1),
             color=(0.1, 0.1, 0.1, 1),
-            size_hint_y=None, height=54
+            size_hint_y=None, height=60
         )
         home_btn.bind(on_press=lambda x: setattr(
             self.manager, "current", "home"))
