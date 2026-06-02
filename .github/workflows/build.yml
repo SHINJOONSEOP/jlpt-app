@@ -48,12 +48,16 @@ jobs:
     - name: Remove Java 11 and use Java 17
       run: |
         sudo update-alternatives --set java /usr/lib/jvm/temurin-17-jdk-amd64/bin/java
+        echo "JAVA_HOME=/usr/lib/jvm/temurin-17-jdk-amd64" >> $GITHUB_ENV
         java -version
 
     - name: Build APK
       env:
         ANDROID_SDK_ROOT: /home/runner/.buildozer/android/platform/android-sdk
+        JAVA_HOME: /usr/lib/jvm/temurin-17-jdk-amd64
       run: |
+        export JAVA_HOME=/usr/lib/jvm/temurin-17-jdk-amd64
+        export PATH=$JAVA_HOME/bin:$PATH
         yes | buildozer android debug
 
     - name: Upload APK
