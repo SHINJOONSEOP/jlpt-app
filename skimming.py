@@ -31,7 +31,6 @@ class SkimmingScreen(Screen):
         self._build_ui()
 
     def _make_bg(self, widget):
-        """위젯에 연회색 배경 추가"""
         with widget.canvas.before:
             Color(0.95, 0.95, 0.93, 1)
             rect = Rectangle(pos=widget.pos, size=widget.size)
@@ -94,7 +93,7 @@ class SkimmingScreen(Screen):
         # 단어 카드
         self.card = BoxLayout(
             orientation="vertical",
-            size_hint_y=None, height=400,
+            size_hint_y=None, height=420,
             padding=[24, 20, 24, 20], spacing=12
         )
         with self.card.canvas.before:
@@ -113,29 +112,19 @@ class SkimmingScreen(Screen):
         )
         self.level_label.bind(
             size=lambda i, v: setattr(i, 'text_size', v))
-        # 🔊 일본어 발음 버튼
-        speak_btn = Button(
-            text="🔊 발음 듣기",
-            font_name="Nanum",
-            font_size=13,
-            size_hint_y=None,
-            height=36,
-            background_color=(0.2, 0.5, 0.9, 1),
-            color=(1, 1, 1, 1)
-        )
-        speak_btn.bind(on_press=lambda x: speak(
-            self.words[self.index]["japanese"] + "。" +
-            self.words[self.index].get("example_jp", "")
-        ))
-        self.card.add_widget(speak_btn)
 
-        self.jp_label = Label(
-            text="", font_name="NotoJP", font_size=46, bold=True,
+        # 🔊 단어 클릭하면 발음 (Button처럼 동작하는 Label)
+        self.jp_btn = Button(
+            text="",
+            font_name="NotoJP", font_size=46, bold=True,
             color=(0, 0, 0, 1),
-            size_hint_y=None, height=70, halign="center"
+            size_hint_y=None, height=70,
+            background_color=(1, 1, 1, 0),  # 투명 배경
         )
-        self.jp_label.bind(
-            size=lambda i, v: setattr(i, 'text_size', v))
+        self.jp_btn.bind(on_press=lambda x: speak(
+            self.words[self.index]["japanese"]
+        ))
+
         self.furigana_label = Label(
             text="", font_name="NotoJP", font_size=14,
             color=(0.5, 0.5, 0.5, 1),
@@ -143,6 +132,7 @@ class SkimmingScreen(Screen):
         )
         self.furigana_label.bind(
             size=lambda i, v: setattr(i, 'text_size', v))
+
         self.kr_label = Label(
             text="", font_name="Nanum", font_size=22, bold=True,
             color=(0.1, 0.1, 0.1, 1),
@@ -159,12 +149,19 @@ class SkimmingScreen(Screen):
             pos=lambda i, v: setattr(_dr, 'pos', v),
             size=lambda i, v: setattr(_dr, 'size', v))
 
-        self.example_jp_label = Label(
-            text="", font_name="NotoJP", font_size=14,
+        # 🔊 예문 클릭하면 예문 발음
+        self.example_jp_btn = Button(
+            text="",
+            font_name="NotoJP", font_size=14,
             color=(0.2, 0.2, 0.2, 1),
             size_hint_y=None, height=46,
-            halign="center", text_size=(300, None)
+            background_color=(0.95, 0.97, 1, 1),
+            halign="center"
         )
+        self.example_jp_btn.bind(on_press=lambda x: speak(
+            self.words[self.index].get("example_jp", "")
+        ))
+
         self.example_kr_label = Label(
             text="", font_name="Nanum", font_size=13,
             color=(0.5, 0.5, 0.5, 1),
@@ -172,13 +169,23 @@ class SkimmingScreen(Screen):
             halign="center", text_size=(300, None)
         )
 
+        # 힌트 라벨
+        hint = Label(
+            text="💡 단어/예문을 누르면 발음이 재생돼요",
+            font_name="Nanum", font_size=11,
+            color=(0.7, 0.7, 0.7, 1),
+            size_hint_y=None, height=20, halign="center"
+        )
+        hint.bind(size=lambda i, v: setattr(i, 'text_size', v))
+
         self.card.add_widget(self.level_label)
-        self.card.add_widget(self.jp_label)
+        self.card.add_widget(self.jp_btn)
         self.card.add_widget(self.furigana_label)
         self.card.add_widget(self.kr_label)
         self.card.add_widget(divider)
-        self.card.add_widget(self.example_jp_label)
+        self.card.add_widget(self.example_jp_btn)
         self.card.add_widget(self.example_kr_label)
+        self.card.add_widget(hint)
 
         # 하단 버튼
         btn_layout = BoxLayout(
@@ -209,16 +216,14 @@ class SkimmingScreen(Screen):
 
     def _update_card(self):
         w = self.words[self.index]
-        self.level_label.text      = w["level"]
-        self.jp_label.text         = w["japanese"]
-        self.furigana_label.text   = w["furigana"]
-        self.kr_label.text         = w["korean"]
-        self.example_jp_label.text = w["example_jp"]
-        self.example_kr_label.text = w["example_kr"]
-        self.progress_label.text   = \
-            f"{self.index + 1} / {len(self.words)}"
-        self.fill_bar.size_hint_x  = \
-            (self.index + 1) / len(self.words)
+        self.level_label.text        = w["level"]
+        self.jp_btn.text             = w["japanese"]
+        self.furigana_label.text     = w["furigana"]
+        self.kr_label.text           = w["korean"]
+        self.example_jp_btn.text     = w["example_jp"]
+        self.example_kr_label.text   = w["example_kr"]
+        self.progress_label.text     = f"{self.index + 1} / {len(self.words)}"
+        self.fill_bar.size_hint_x    = (self.index + 1) / len(self.words)
 
     def mark_dont_know(self, instance):
         w = self.words[self.index]
@@ -251,10 +256,7 @@ class SkimmingScreen(Screen):
         self.clear_widgets()
 
         root = BoxLayout(orientation="vertical")
-        bg   = BoxLayout(
-            orientation="vertical",
-            padding=40, spacing=16
-        )
+        bg   = BoxLayout(orientation="vertical", padding=40, spacing=16)
         self._make_bg(bg)
 
         bg.add_widget(Widget())

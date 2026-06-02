@@ -4,7 +4,18 @@ from kivy.app import App
 from kivy.uix.screenmanager import ScreenManager
 from kivy.uix.label import Label
 from kivy.uix.scrollview import ScrollView
- 
+from kivy.core.text import LabelBase
+
+# 폰트 가장 먼저 등록
+try:
+    LabelBase.register(name="Nanum", fn_regular="NanumGothic.ttf")
+except Exception:
+    pass
+try:
+    LabelBase.register(name="NotoJP", fn_regular="NotoSansJP-Regular.ttf")
+except Exception:
+    pass
+
 class JLPTApp(App):
     def build(self):
         try:
@@ -15,7 +26,7 @@ class JLPTApp(App):
             from history import HistoryScreen
             from stats import StatsScreen
             import api
- 
+
             sm = ScreenManager()
             sm.add_widget(LoginScreen(name="login"))
             sm.add_widget(HomeScreen(name="home"))
@@ -23,16 +34,15 @@ class JLPTApp(App):
             sm.add_widget(QuizScreen(name="quiz"))
             sm.add_widget(HistoryScreen(name="history"))
             sm.add_widget(StatsScreen(name="stats"))
- 
+
             if api.try_auto_login():
                 sm.current = "home"
             else:
                 sm.current = "login"
- 
+
             return sm
- 
+
         except Exception:
-            # 오류 내용을 화면에 표시
             err_text = traceback.format_exc()
             scroll = ScrollView()
             lbl = Label(
@@ -45,7 +55,6 @@ class JLPTApp(App):
             lbl.bind(texture_size=lbl.setter('size'))
             scroll.add_widget(lbl)
             return scroll
- 
+
 if __name__ == "__main__":
     JLPTApp().run()
- 
